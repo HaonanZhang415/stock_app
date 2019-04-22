@@ -27,30 +27,14 @@ import datetime
 # called `app` in `main.py`.
 app = Flask(__name__)
 
-def checkSymbol(company):
-    
-    stock_object = Stock(company)
-    
-    try:
-        stock_object.get_company_name()
-    except:
-        print ("Invalid symbol! Please input again:")
-        return checkSymbol()
-            
-    return stock_object, company
 
-def symbolFunc(value):
-    if value < 0:
-        return str(value)
-    else:
-        return '+' + str(value)
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
 @app.route('/company/<inputy>')
-def hello(inputy):
+def stock(inputy):
     """Return a friendly HTTP greeting."""
     #return 'Hello World!'
 
@@ -74,7 +58,23 @@ def hello(inputy):
     change = symbolFunc(change)
     print (curr_price, change, '(' + str(percentage) + '%)') 
 
+def checkSymbol(company):
+    
+    stock_object = Stock(company)
+    
+    try:
+        stock_object.get_company_name()
+    except:
+        print ("Invalid symbol! Please input again:")
+        return checkSymbol()
+            
+    return stock_object, company
 
+def symbolFunc(value):
+    if value < 0:
+        return str(value)
+    else:
+        return '+' + str(value)
 
 
 
