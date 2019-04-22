@@ -1,0 +1,35 @@
+<html>
+<head>
+    <title>Stock Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+    <div class="container">
+        <h1>Please enter company symbol</h1>
+        <br>
+        <form action="" method="post">
+            <input type="text" placeholder="Symbol" name="Symbol" value="{{
+          request.form.Symbol }}">
+            <input class="btn btn-default" type="submit" value="SUBMIT">
+        </form>
+        {% if error %}
+        <p class="error"><strong>Error: {{ error }}</strong>
+        {% endif %}
+
+        {% if output1 %}
+        <p class="output1"><strong>{{ output1 }}</strong>
+        {% endif %}
+
+        {% if output2 %}
+        <p class="output2"><strong>{{ output2 }}</strong>
+        {% endif %}
+            
+        {% if output3 %}
+        <p class="output3"><strong>{{ output3 }}</strong>
+        {% endif %}
+
+
+</div>
+</body>
+</html>

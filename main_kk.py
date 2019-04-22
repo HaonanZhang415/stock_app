@@ -19,7 +19,7 @@ Created on Sun Apr 21 16:57:38 2019
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # [START gae_python37_app]
-from flask import Flask
+from flask import Flask, render_template, redirect, url_for, request
 from iexfinance.stocks import Stock
 import datetime
 
@@ -29,34 +29,63 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello():
+def home():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
-@app.route('/company/<inputy>')
-def stock(inputy):
-    """Return a friendly HTTP greeting."""
-    #return 'Hello World!'
+@app.route('/welcome')
+def hello2():
 
-    print('Program Started!')
-    currentDT = datetime.datetime.now()
+    return render_template('welcome.html')
+
+@app.route('/stock', methods = ['GET', 'POST'])
+def stock():
+    error = None
+    output1 = None
+    output2 = None
+    output3 = None
+    if request.method == "POST":
+        
     
-    stock_object, company = checkSymbol(inputy)
+        print('Program Started!')
+        currentDT = datetime.datetime.now()
+        
+        company = request.form["Symbol"]
+        
+        stock_object = Stock(company)
+        
+        print(company)
+        
+        try:
+            stock_object.get_company_name()
+            
+        except:
+            error = 'Invalid Symbol. Please try again.'
+            return render_template('stock.html', error=error)
+        
+        
+        print (currentDT.strftime("%a %b %d %H:%M:%S PDT %Y"))
+        print (stock_object.get_company_name(), '(' + company + ')')
+        
+        all_price = stock_object.get_previous_day_prices()
+        
+        
+        curr_price = stock_object.get_previous_day_prices()['close']
+        open_price = stock_object.get_previous_day_prices()['open']
+        change = stock_object.get_previous_day_prices()['change']
+        
+        
+        percentage = symbolFunc(round(change/open_price * 100, 2))
+        change = symbolFunc(change)
+        print (curr_price, change, '(' + str(percentage) + '%)') 
+        
+        output1 = currentDT.strftime("%a %b %d %H:%M:%S PDT %Y")
+        output2 = stock_object.get_company_name() + '    (' + company + ')'
+        output3 = str(curr_price) + '    ' + change + '    (' + str(percentage) + '%)'
+        
+        return render_template('stock.html', error=error, output1 = output1, output2 = output2, output3 = output3)
     
-    print (currentDT.strftime("%a %b %d %H:%M:%S PDT %Y"))
-    print (stock_object.get_company_name(), '(' + company + ')')
-    
-    all_price = stock_object.get_previous_day_prices()
-    
-    
-    curr_price = stock_object.get_previous_day_prices()['close']
-    open_price = stock_object.get_previous_day_prices()['open']
-    change = stock_object.get_previous_day_prices()['change']
-    
-    
-    percentage = symbolFunc(round(change/open_price * 100, 2))
-    change = symbolFunc(change)
-    print (curr_price, change, '(' + str(percentage) + '%)') 
+    return render_template('stock.html', error=error)
 
 def checkSymbol(company):
     
@@ -75,6 +104,17 @@ def symbolFunc(value):
         return str(value)
     else:
         return '+' + str(value)
+    
+# Route for handling the login page logic
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            return redirect(url_for('home'))
+    return render_template('login.html', error=error)
 
 
 
@@ -82,5 +122,5 @@ if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
     # can be configured by adding an `entrypoint` to app.yaml.
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(debug=True)#host='127.0.0.1', port=8000, debug=True
 # [END gae_python37_app]
