@@ -54,6 +54,7 @@ def stock():
         
         company = request.form["Symbol"]
         
+        
         stock_object = Stock(company)
         
         print(company)
@@ -71,13 +72,13 @@ def stock():
         
         all_price = stock_object.get_previous_day_prices()
         
-        
-        curr_price = stock_object.get_previous_day_prices()['close']
+        curr_price = stock_object.get_quote()['delayedPrice']
+        pre_close = stock_object.get_quote()['close']
         open_price = stock_object.get_previous_day_prices()['open']
-        change = stock_object.get_previous_day_prices()['change']
+        change = round(curr_price - pre_close, 2)
         
         
-        percentage = symbolFunc(round(change/open_price * 100, 2))
+        percentage = symbolFunc(round(change/pre_close * 100, 2))
         change = symbolFunc(change)
         print (curr_price, change, '(' + str(percentage) + '%)') 
         
