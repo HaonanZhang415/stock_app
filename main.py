@@ -22,6 +22,8 @@ Created on Sun Apr 21 16:57:38 2019
 from flask import Flask, render_template, redirect, url_for, request
 from iexfinance.stocks import Stock
 import datetime
+import pytz
+from pytz import timezone
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -79,11 +81,17 @@ def stock():
         change = symbolFunc(change)
         print (curr_price, change, '(' + str(percentage) + '%)') 
         
-        output1 = currentDT.strftime("%a %b %d %H:%M:%S PDT %Y")
+        date_format = "%a %b %d %H:%M:%S PDT %Y"
+        company = company.upper()
+        output1 = currentDT.strftime(date_format)
+        
+        date_fixed = currentDT.astimezone(timezone('US/Pacific'))
+        date_fixed = date_fixed.strftime(date_format)
+        
         output2 = stock_object.get_company_name() + '    (' + company + ')'
         output3 = str(curr_price) + '    ' + change + '    (' + str(percentage) + '%)'
         
-        return render_template('stock.html', error=error, output1 = output1, output2 = output2, output3 = output3)
+        return render_template('stock.html', error=error, output1 = date_fixed, output2 = output2, output3 = output3)
     
     return render_template('stock.html', error=error)
 
@@ -122,5 +130,5 @@ if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
     # can be configured by adding an `entrypoint` to app.yaml.
-    app.run(debug=True)#host='127.0.0.1', port=8000, debug=True
+    app.run()#host='127.0.0.1', port=8000, debug=True
 # [END gae_python37_app]
