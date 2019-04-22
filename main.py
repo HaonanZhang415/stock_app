@@ -44,6 +44,10 @@ def symbolFunc(value):
         return str(value)
     else:
         return '+' + str(value)
+@app.route('/')
+def hello():
+    """Return a friendly HTTP greeting."""
+    return 'Hello World!'
 
 @app.route('/company/<inputy>')
 def hello(inputy):
