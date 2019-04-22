@@ -20,7 +20,8 @@ Created on Sun Apr 21 16:57:38 2019
 # limitations under the License.
 # [START gae_python37_app]
 from flask import Flask
-
+from iexfinance.stocks import Stock
+import datetime
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -32,7 +33,48 @@ def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
+@app.route('/company/<inputy>')
+def stock(inputy):
+    """Return a friendly HTTP greeting."""
+    #return 'Hello World!'
 
+    print('Program Started!')
+    currentDT = datetime.datetime.now()
+    
+    stock_object, company = checkSymbol(inputy)
+    
+    print (currentDT.strftime("%a %b %d %H:%M:%S PDT %Y"))
+    print (stock_object.get_company_name(), '(' + company + ')')
+    
+    all_price = stock_object.get_previous_day_prices()
+    
+    
+    curr_price = stock_object.get_previous_day_prices()['close']
+    open_price = stock_object.get_previous_day_prices()['open']
+    change = stock_object.get_previous_day_prices()['change']
+    
+    
+    percentage = symbolFunc(round(change/open_price * 100, 2))
+    change = symbolFunc(change)
+    print (curr_price, change, '(' + str(percentage) + '%)') 
+
+def checkSymbol(company):
+    
+    stock_object = Stock(company)
+    
+    try:
+        stock_object.get_company_name()
+    except:
+        print ("Invalid symbol! Please input again:")
+        return checkSymbol()
+            
+    return stock_object, company
+
+def symbolFunc(value):
+    if value < 0:
+        return str(value)
+    else:
+        return '+' + str(value)
 
 
 
