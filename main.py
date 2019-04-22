@@ -49,37 +49,33 @@ def stock():
     if request.method == "POST":
         
     
-        print('Program Started!')
         currentDT = datetime.datetime.now()
         
         company = request.form["Symbol"]
-        
-        
         stock_object = Stock(company)
         
         print(company)
         
         try:
-            stock_object.get_company_name()
-            
+            stock_object.get_company_name()   
         except:
             error = 'Invalid Symbol. Please try again.'
             return render_template('stock.html', error=error)
-        
-        
+
         print (currentDT.strftime("%a %b %d %H:%M:%S PDT %Y"))
         print (stock_object.get_company_name(), '(' + company + ')')
         
-        all_price = stock_object.get_previous_day_prices()
+        previous_day_price = stock_object.get_previous_day_prices()['close']
+        print(previous_day_price)
+     
+        curr_price = round(stock_object.get_quote()['iexRealtimePrice'], 2)
+        #pre_close = stock_object.get_quote()['close']
+        change = round(curr_price - previous_day_price, 2)
         
-        curr_price = stock_object.get_quote()['delayedPrice']
-        pre_close = stock_object.get_quote()['close']
-        open_price = stock_object.get_previous_day_prices()['open']
-        change = round(curr_price - pre_close, 2)
         
-        
-        percentage = symbolFunc(round(change/pre_close * 100, 2))
+        percentage = symbolFunc(round(change/previous_day_price * 100, 2))
         change = symbolFunc(change)
+        
         print (curr_price, change, '(' + str(percentage) + '%)') 
         
         date_format = "%a %b %d %H:%M:%S PDT %Y"
