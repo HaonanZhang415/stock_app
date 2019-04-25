@@ -65,22 +65,25 @@ def stock():
         print (currentDT.strftime("%a %b %d %H:%M:%S PDT %Y"))
         print (stock_object.get_company_name(), '(' + company + ')')
         
-        previous_day_price = stock_object.get_previous_day_prices()['close']
-        print(previous_day_price)
-     
-        curr_price = round(stock_object.get_quote()['iexRealtimePrice'], 2)
+        #previous_day_price = stock_object.get_previous_day_prices()['close']
+        #print(previous_day_price)
+        print(stock_object.get_quote())
+        try:
+            curr_price = round(stock_object.get_quote()['iexRealtimePrice'], 2)
+        except:
+            curr_price = round(stock_object.get_quote()['close'], 2)
         #pre_close = stock_object.get_quote()['close']
-        change = round(curr_price - previous_day_price, 2)
+        change = round(stock_object.get_quote()['change'], 2)
         
         
-        percentage = symbolFunc(round(change/previous_day_price * 100, 2))
+        percentage = symbolFunc(round(stock_object.get_quote()['changePercent'] * 100, 2))
         change = symbolFunc(change)
         
         print (curr_price, change, '(' + str(percentage) + '%)') 
         
         date_format = "%a %b %d %H:%M:%S PDT %Y"
         company = company.upper()
-        output1 = currentDT.strftime(date_format)
+        #output1 = currentDT.strftime(date_format)
         
         date_fixed = currentDT.astimezone(timezone('US/Pacific'))
         date_fixed = date_fixed.strftime(date_format)
